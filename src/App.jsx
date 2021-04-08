@@ -1,48 +1,42 @@
 import './App.css';
-import content from './static'
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import content from './static';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    '& > *': {
-      margin: theme.spacing(1),
-      width: '25ch',
-    },
-  },
-}));
 
 function App() {
 
-  const { control, handleSubmit, errors } = useForm()
+  const schema = Yup.object().shape({
 
-  const classes = useStyles();
+    userName: Yup.string().required("username is required"),
+    password: Yup.string().required('Password is required').min(6)
+  })
 
-  const onSubmit = (data: ITextField) => console.log(data);
+  const { register, handleSubmit } = useForm({
+    resolver: yupResolver(schema)
+  });
+
+  const onSubmit = (data) => console.log(data)
 
   return (
-    <div>
-      <form className={classes.root} onSubmit={handleSubmit(onSubmit)}>
+    <div className="App">
+      <h1>React hook form</h1>
+      <form onSubmit={handleSubmit(onSubmit)}>
         {content.inputs.map((input, key) => {
           return (
             <div key={key}>
-              {/* <TextField id="standard-basic" label={input.label} type={input.type} /> */}
-              <Controller
-                name={input.label}
-                control={control}
-                defaultValue={input.type}
-                render={({ field }) => <input {...field} />}
-              />
+              <p>
+                <label>{input.label}</label>
+              </p>
+              <p>
+                <input name={input.name} className="input" type={input.type} />
+              </p>
             </div>
           )
-        })
-        }
-        <Button variant="contained" color="primary" type="submit">
-          Submit
-      </Button>
+        })}
+        <button className="btn" type="submit">Submit</button>
       </form>
     </div>
   )
